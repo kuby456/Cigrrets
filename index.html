@@ -1,211 +1,200 @@
 <!doctype html>
 <html lang="he" dir="rtl">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>מונה לחיצות + ממוצע</title>
-  <style>
-    body { font-family: system-ui, Arial; margin: 20px; background:#0b0b0f; color:#e5e7eb; }
-    .wrap { max-width: 900px; margin: 0 auto; }
-    h1 { margin: 0 0 12px; font-size: 22px; }
-    .row { display: flex; gap: 10px; flex-wrap: wrap; margin: 12px 0 16px; }
-    button {
-      border: 0; padding: 10px 14px; border-radius: 12px;
-      background: #2563eb; color: white; font-weight: 700; cursor: pointer;
-    }
-    button.secondary { background:#374151; }
-    button.danger { background:#b91c1c; }
-    button:active { transform: scale(0.99); }
-    .card {
-      background:#111827; border:1px solid #1f2937; border-radius:16px;
-      padding: 14px; margin: 12px 0;
-    }
-    .meta { display:flex; gap:14px; flex-wrap:wrap; color:#9ca3af; font-size: 14px; }
-    .meta b { color:#e5e7eb; }
-    ul { list-style: none; padding: 0; margin: 0; }
-    li {
-      border-bottom: 1px solid #1f2937;
-      padding: 10px 0;
-      display:flex; gap:10px; flex-wrap: wrap; align-items: baseline;
-    }
-    li:last-child { border-bottom: 0; }
-    .pill {
-      display:inline-block; padding: 2px 10px; border-radius: 999px;
-      background:#0f172a; border:1px solid #1f2937; color:#cbd5e1; font-size: 13px;
-    }
-    .big { font-size: 18px; font-weight: 800; }
-    .result { font-size: 16px; }
-    .muted { color:#9ca3af; }
-  </style>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>מונה לחיצות</title>
+
+<style>
+body{
+  margin:0;
+  font-family:system-ui,Arial;
+  background:#f4f6fb;
+  color:#111;
+}
+
+.wrap{
+  max-width:900px;
+  margin:auto;
+  padding:20px;
+}
+
+h1{
+  text-align:center;
+}
+
+.card{
+  background:white;
+  border-radius:14px;
+  padding:16px;
+  box-shadow:0 5px 15px rgba(0,0,0,.08);
+  margin-bottom:20px;
+}
+
+.row{
+  display:flex;
+  gap:10px;
+  flex-wrap:wrap;
+  margin:12px 0;
+}
+
+button{
+  border:none;
+  padding:12px 18px;
+  border-radius:10px;
+  background:#2563eb;
+  color:white;
+  font-weight:700;
+  cursor:pointer;
+}
+
+button.secondary{
+  background:#64748b;
+}
+
+button.danger{
+  background:#dc2626;
+}
+
+.meta{
+  display:flex;
+  gap:20px;
+  flex-wrap:wrap;
+  color:#555;
+}
+
+.big{
+  font-size:22px;
+  font-weight:800;
+  margin-top:6px;
+}
+
+ul{
+  list-style:none;
+  padding:0;
+  margin:0;
+}
+
+li{
+  padding:10px 0;
+  border-bottom:1px solid #e5e7eb;
+}
+
+.pill{
+  display:inline-block;
+  background:#eef2ff;
+  padding:4px 10px;
+  border-radius:999px;
+  margin-left:6px;
+  font-size:13px;
+}
+
+</style>
 </head>
+
 <body>
 <div class="wrap">
-  <h1>מונה לחיצות + ממוצע בין לחיצות</h1>
 
-  <div class="card">
-    <div class="meta">
-      <div>סך לחיצות: <b id="count">0</b></div>
-      <div>לחיצה אחרונה: <b id="lastClick">—</b></div>
-    </div>
+<h1>🕒 מונה לחיצות</h1>
 
-    <div class="row">
-      <button id="clickBtn">לחיצה ✅</button>
-      <button class="secondary" id="avgBtn">חשב ממוצע בין לחיצות</button>
-      <button class="danger" id="clearBtn">איפוס הכל</button>
-    </div>
+<div class="card">
+<div class="meta">
+<div>סה״כ לחיצות: <b id="count">0</b></div>
+<div>לחיצה אחרונה: <b id="lastClick">—</b></div>
+</div>
 
-    <div class="result">
-      <div class="muted">ממוצע נוכחי:</div>
-      <div class="big" id="avgText">—</div>
-    </div>
-  </div>
+<div class="row">
+<button id="clickBtn">לחיצה</button>
+<button class="secondary" id="avgBtn">חשב ממוצע</button>
+<button class="danger" id="clearBtn">איפוס</button>
+</div>
 
-  <div class="card">
-    <div class="meta">
-      <div>רשימת לחיצות (חדש למעלה)</div>
-    </div>
-    <ul id="list"></ul>
-  </div>
+<div>
+ממוצע בין לחיצות:
+<div class="big" id="avgText">—</div>
+</div>
+</div>
+
+<div class="card">
+<ul id="list"></ul>
+</div>
+
 </div>
 
 <script>
-(() => {
-  const LS_KEY = "click_counter_v1";
 
-  const elCount = document.getElementById("count");
-  const elLast  = document.getElementById("lastClick");
-  const elAvg   = document.getElementById("avgText");
-  const elList  = document.getElementById("list");
+const KEY="counter_light";
 
-  const clickBtn = document.getElementById("clickBtn");
-  const avgBtn   = document.getElementById("avgBtn");
-  const clearBtn = document.getElementById("clearBtn");
+const countEl=document.getElementById("count");
+const lastEl=document.getElementById("lastClick");
+const list=document.getElementById("list");
+const avgEl=document.getElementById("avgText");
 
-  function loadState() {
-    try {
-      const raw = localStorage.getItem(LS_KEY);
-      if (!raw) return { clicks: [] };
-      const obj = JSON.parse(raw);
-      if (!obj || !Array.isArray(obj.clicks)) return { clicks: [] };
-      return obj;
-    } catch {
-      return { clicks: [] };
-    }
-  }
+let data=JSON.parse(localStorage.getItem(KEY)||'{"clicks":[]}');
 
-  function saveState(state) {
-    localStorage.setItem(LS_KEY, JSON.stringify(state));
-  }
+function save(){
+localStorage.setItem(KEY,JSON.stringify(data));
+}
 
-  function formatDateTime(ts) {
-    const d = new Date(ts);
-    // תאריך + שעה בעברית
-    return d.toLocaleString("he-IL", {
-      year: "numeric", month: "2-digit", day: "2-digit",
-      hour: "2-digit", minute: "2-digit", second: "2-digit"
-    });
-  }
+function words(ms){
+let s=Math.round(ms/1000);
+let h=Math.floor(s/3600);
+let m=Math.floor(s%3600/60);
+let sec=s%60;
+let t=[];
+if(h)t.push(h+" שעות");
+if(m)t.push(m+" דקות");
+if(!h&&!m)t.push(sec+" שניות");
+return t.join(" ו");
+}
 
-  function pluralHe(n, one, many) {
-    // פשוט ושימושי: 1 -> יחיד, אחרת -> רבים
-    return n === 1 ? one : many;
-  }
+function render(){
+countEl.textContent=data.clicks.length;
+lastEl.textContent=data.clicks[0]?.date||"—";
+list.innerHTML="";
+data.clicks.forEach((c,i)=>{
+let li=document.createElement("li");
+li.innerHTML=`<span class=pill>#${data.clicks.length-i}</span>
+<span class=pill>${c.date}</span>
+<span class=pill>${c.delta}</span>`;
+list.appendChild(li);
+});
+}
 
-  function msToWords(ms) {
-    if (ms < 0) ms = 0;
-    const totalSec = Math.round(ms / 1000);
+render();
 
-    const hours = Math.floor(totalSec / 3600);
-    const minutes = Math.floor((totalSec % 3600) / 60);
-    const seconds = totalSec % 60;
+clickBtn.onclick=()=>{
+let now=Date.now();
+let delta=data.clicks.length?words(now-data.clicks[0].ts):"ראשון";
+data.clicks.unshift({
+ts:now,
+date:new Date(now).toLocaleString("he-IL"),
+delta:delta
+});
+save();
+render();
+};
 
-    const parts = [];
-    if (hours)   parts.push(`${hours} ${pluralHe(hours, "שעה", "שעות")}`);
-    if (minutes) parts.push(`${minutes} ${pluralHe(minutes, "דקה", "דקות")}`);
-    if (!hours && !minutes) {
-      parts.push(`${seconds} ${pluralHe(seconds, "שנייה", "שניות")}`);
-    } else if (seconds) {
-      parts.push(`${seconds} ${pluralHe(seconds, "שנייה", "שניות")}`);
-    }
-    return parts.join(" ו־");
-  }
+avgBtn.onclick=()=>{
+if(data.clicks.length<2){
+avgEl.textContent="צריך לפחות שתי לחיצות";
+return;
+}
+let arr=[...data.clicks].reverse();
+let sum=0;
+for(let i=1;i<arr.length;i++)sum+=arr[i].ts-arr[i-1].ts;
+avgEl.textContent=words(sum/(arr.length-1));
+};
 
-  function render(state) {
-    const clicks = state.clicks;
-    elCount.textContent = clicks.length.toString();
+clearBtn.onclick=()=>{
+if(confirm("למחוק הכל?")){
+data={clicks:[]};
+localStorage.removeItem(KEY);
+avgEl.textContent="—";
+render();
+}
+};
 
-    if (clicks.length) {
-      elLast.textContent = formatDateTime(clicks[0].ts);
-    } else {
-      elLast.textContent = "—";
-    }
-
-    // רשימה
-    elList.innerHTML = "";
-    clicks.forEach((c, idx) => {
-      const li = document.createElement("li");
-
-      const num = clicks.length - idx; // כי חדש למעלה
-      const when = formatDateTime(c.ts);
-
-      li.innerHTML = `
-        <span class="pill">#${num}</span>
-        <span class="pill">תאריך/שעה: ${when}</span>
-        <span class="pill">מאז הקודמת: ${c.sincePrevWords}</span>
-      `;
-      elList.appendChild(li);
-    });
-  }
-
-  function computeAverageWords(clicks) {
-    if (clicks.length < 2) return "צריך לפחות 2 לחיצות כדי לחשב ממוצע";
-    let sum = 0;
-    // clicks מסודר חדש למעלה. נחשב לפי ts מהישן לחדש כדי להיות ברור:
-    const sorted = [...clicks].sort((a,b) => a.ts - b.ts);
-    for (let i = 1; i < sorted.length; i++) {
-      sum += (sorted[i].ts - sorted[i-1].ts);
-    }
-    const avg = sum / (sorted.length - 1);
-    return msToWords(avg);
-  }
-
-  // init
-  let state = loadState();
-  render(state);
-  elAvg.textContent = state.lastAvgText || "—";
-
-  clickBtn.addEventListener("click", () => {
-    const now = Date.now();
-
-    let sincePrevMs = 0;
-    if (state.clicks.length) {
-      // last click is at index 0 (newest)
-      sincePrevMs = now - state.clicks[0].ts;
-    }
-    const sincePrevWords = state.clicks.length ? msToWords(sincePrevMs) : "זו הלחיצה הראשונה";
-
-    // push newest first
-    state.clicks.unshift({ ts: now, sincePrevWords });
-
-    saveState(state);
-    render(state);
-  });
-
-  avgBtn.addEventListener("click", () => {
-    const text = computeAverageWords(state.clicks);
-    elAvg.textContent = text;
-    state.lastAvgText = text;
-    saveState(state);
-  });
-
-  clearBtn.addEventListener("click", () => {
-    if (!confirm("לאפס הכל? זה ימחק את כל הלחיצות מה-localStorage.")) return;
-    state = { clicks: [] };
-    localStorage.removeItem(LS_KEY);
-    elAvg.textContent = "—";
-    render(state);
-  });
-})();
 </script>
 </body>
 </html>
