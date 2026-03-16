@@ -176,14 +176,19 @@ render();
 };
 
 avgBtn.onclick=()=>{
-if(data.clicks.length<2){
-avgEl.textContent="צריך לפחות שתי לחיצות";
+if(data.clicks.length<1){
+avgEl.textContent="אין לחיצות";
 return;
 }
-let arr=[...data.clicks].reverse();
-let sum=0;
-for(let i=1;i<arr.length;i++)sum+=arr[i].ts-arr[i-1].ts;
-avgEl.textContent=words(sum/(arr.length-1));
+
+let first=data.clicks[data.clicks.length-1].ts; // הלחיצה הראשונה
+let last=data.clicks[0].ts; // הלחיצה האחרונה
+
+let totalTime=last-first;
+
+let avg=totalTime/(data.clicks.length-1);
+
+avgEl.textContent=words(avg);
 };
 
 clearBtn.onclick=()=>{
