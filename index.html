@@ -88,16 +88,17 @@ li{
   margin-left:6px;
   font-size:13px;
 }
-
 </style>
 </head>
 
 <body>
+
 <div class="wrap">
 
 <h1>🕒 מונה לחיצות</h1>
 
 <div class="card">
+
 <div class="meta">
 <div>סה״כ לחיצות: <b id="count">0</b></div>
 <div>לחיצה אחרונה: <b id="lastClick">—</b></div>
@@ -105,7 +106,6 @@ li{
 
 <div class="row">
 <button id="clickBtn">לחיצה</button>
-<button class="secondary" id="avgBtn">חשב ממוצע</button>
 <button class="danger" id="clearBtn">איפוס</button>
 </div>
 
@@ -113,6 +113,7 @@ li{
 ממוצע בין לחיצות:
 <div class="big" id="avgText">—</div>
 </div>
+
 </div>
 
 <div class="card">
@@ -137,69 +138,104 @@ localStorage.setItem(KEY,JSON.stringify(data));
 }
 
 function words(ms){
+
 let s=Math.round(ms/1000);
+
 let h=Math.floor(s/3600);
-let m=Math.floor(s%3600/60);
+let m=Math.floor((s%3600)/60);
 let sec=s%60;
+
 let t=[];
-if(h)t.push(h+" שעות");
-if(m)t.push(m+" דקות");
-if(!h&&!m)t.push(sec+" שניות");
+
+if(h) t.push(h+" שעות");
+if(m) t.push(m+" דקות");
+
+if(!h && !m) t.push(sec+" שניות");
+
 return t.join(" ו");
 }
 
+function calcAverage(){
+
+if(data.clicks.length<2){
+avgEl.textContent="צריך לפחות שתי לחיצות";
+return;
+}
+
+let first=data.clicks[data.clicks.length-1].ts;
+let last=data.clicks[0].ts;
+
+let total=last-first;
+
+let avg=total/(data.clicks.length-1);
+
+avgEl.textContent=words(avg);
+}
+
 function render(){
+
 countEl.textContent=data.clicks.length;
-lastEl.textContent=data.clicks[0]?.date||"—";
+
+lastEl.textContent=data.clicks[0]?.date || "—";
+
 list.innerHTML="";
+
 data.clicks.forEach((c,i)=>{
+
 let li=document.createElement("li");
-li.innerHTML=`<span class=pill>#${data.clicks.length-i}</span>
+
+li.innerHTML=
+`<span class=pill>#${data.clicks.length-i}</span>
 <span class=pill>${c.date}</span>
 <span class=pill>${c.delta}</span>`;
+
 list.appendChild(li);
+
 });
+
+calcAverage();
 }
 
 render();
 
 clickBtn.onclick=()=>{
+
 let now=Date.now();
-let delta=data.clicks.length?words(now-data.clicks[0].ts):"ראשון";
+
+let delta=data.clicks.length
+? words(now-data.clicks[0].ts)
+: "ראשון";
+
 data.clicks.unshift({
+
 ts:now,
 date:new Date(now).toLocaleString("he-IL"),
 delta:delta
+
 });
+
 save();
+
 render();
-};
-
-avgBtn.onclick=()=>{
-if(data.clicks.length<1){
-avgEl.textContent="אין לחיצות";
-return;
-}
-
-let first=data.clicks[data.clicks.length-1].ts; // הלחיצה הראשונה
-let last=data.clicks[0].ts; // הלחיצה האחרונה
-
-let totalTime=last-first;
-
-let avg=totalTime/(data.clicks.length-1);
-
-avgEl.textContent=words(avg);
 };
 
 clearBtn.onclick=()=>{
+
 if(confirm("למחוק הכל?")){
+
 data={clicks:[]};
+
 localStorage.removeItem(KEY);
+
 avgEl.textContent="—";
+
 render();
+
 }
+
 };
 
 </script>
+
 </body>
 </html>
