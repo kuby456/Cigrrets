@@ -1,240 +1,204 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="he" dir="rtl">
 <head>
-<meta charset="utf-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>מונה לחיצות</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta charset="UTF-8">
+<title>מחשבון עישון</title>
 
 <style>
-body{
-  margin:0;
-  font-family:system-ui,Arial;
-  background:#f4f6fb;
-  color:#111;
-}
-
-.wrap{
-  max-width:900px;
-  margin:auto;
+body {
+  background:#0f1117;
+  color:white;
+  font-family:sans-serif;
+  text-align:center;
   padding:20px;
 }
 
-h1{
-  text-align:center;
-}
+h2 { margin-bottom:20px; }
 
-.card{
-  background:white;
-  border-radius:14px;
-  padding:16px;
-  box-shadow:0 5px 15px rgba(0,0,0,.08);
-  margin-bottom:20px;
-}
-
-.row{
-  display:flex;
-  gap:10px;
-  flex-wrap:wrap;
-  margin:12px 0;
-}
-
-button{
+button {
+  padding:12px 20px;
+  margin:5px;
   border:none;
-  padding:12px 18px;
   border-radius:10px;
-  background:#2563eb;
-  color:white;
-  font-weight:700;
+  background:#00d4ff;
+  color:black;
+  font-size:16px;
   cursor:pointer;
 }
 
-button.secondary{
-  background:#64748b;
+button:hover { background:white; }
+
+.box {
+  margin-top:20px;
+  font-size:18px;
+  line-height:1.8;
 }
 
-button.danger{
-  background:#dc2626;
-}
-
-.meta{
+/* popup */
+.popup {
+  position:fixed;
+  top:0;
+  left:0;
+  width:100%;
+  height:100%;
+  background:rgba(0,0,0,0.7);
   display:flex;
-  gap:20px;
-  flex-wrap:wrap;
-  color:#555;
+  justify-content:center;
+  align-items:center;
+  visibility:hidden;
 }
 
-.big{
-  font-size:22px;
-  font-weight:800;
-  margin-top:6px;
-}
+.popup.active { visibility:visible; }
 
-ul{
-  list-style:none;
-  padding:0;
-  margin:0;
-}
-
-li{
-  padding:10px 0;
-  border-bottom:1px solid #e5e7eb;
-}
-
-.pill{
-  display:inline-block;
-  background:#eef2ff;
-  padding:4px 10px;
-  border-radius:999px;
-  margin-left:6px;
-  font-size:13px;
+.popup-content {
+  background:#1a1f2b;
+  padding:25px;
+  border-radius:12px;
 }
 </style>
 </head>
 
 <body>
 
-<div class="wrap">
-
-<h1>🕒 מונה לחיצות</h1>
-
-<div class="card">
-
-<div class="meta">
-<div>סה״כ לחיצות: <b id="count">0</b></div>
-<div>לחיצה אחרונה: <b id="lastClick">—</b></div>
-</div>
-
-<div class="row">
-<button id="clickBtn">לחיצה</button>
-<button class="danger" id="clearBtn">איפוס</button>
-</div>
+<h2>🚬 מחשבון עישון</h2>
 
 <div>
-ממוצע בין לחיצות:
-<div class="big" id="avgText">—</div>
+  <button onclick="ask('addPack')">➕ קנית קופסה</button>
+  <button onclick="ask('finishPack')">🗑️ גמרת קופסה</button>
+  <button onclick="ask('addCig')">🚬 סיגריה ידנית</button>
 </div>
 
-</div>
+<div class="box" id="stats"></div>
 
-<div class="card">
-<ul id="list"></ul>
-</div>
-
+<!-- popup -->
+<div class="popup" id="popup">
+  <div class="popup-content">
+    <h3>אתה בטוח?</h3>
+    <button onclick="confirmAction()">✔ כן</button>
+    <button onclick="closePopup()">❌ לא</button>
+  </div>
 </div>
 
 <script>
-
-const KEY="counter_light";
-
-const countEl=document.getElementById("count");
-const lastEl=document.getElementById("lastClick");
-const list=document.getElementById("list");
-const avgEl=document.getElementById("avgText");
-
-let data=JSON.parse(localStorage.getItem(KEY)||'{"clicks":[]}');
-
-function save(){
-localStorage.setItem(KEY,JSON.stringify(data));
-}
-
-function words(ms){
-
-let s=Math.round(ms/1000);
-
-let h=Math.floor(s/3600);
-let m=Math.floor((s%3600)/60);
-let sec=s%60;
-
-let t=[];
-
-if(h) t.push(h+" שעות");
-if(m) t.push(m+" דקות");
-
-if(!h && !m) t.push(sec+" שניות");
-
-return t.join(" ו");
-}
-
-function calcAverage(){
-
-if(data.clicks.length<2){
-avgEl.textContent="צריך לפחות שתי לחיצות";
-return;
-}
-
-let first=data.clicks[data.clicks.length-1].ts;
-let last=data.clicks[0].ts;
-
-let total=last-first;
-
-let avg=total/(data.clicks.length-1);
-
-avgEl.textContent=words(avg);
-}
-
-function render(){
-
-countEl.textContent=data.clicks.length;
-
-lastEl.textContent=data.clicks[0]?.date || "—";
-
-list.innerHTML="";
-
-data.clicks.forEach((c,i)=>{
-
-let li=document.createElement("li");
-
-li.innerHTML=
-`<span class=pill>#${data.clicks.length-i}</span>
-<span class=pill>${c.date}</span>
-<span class=pill>${c.delta}</span>`;
-
-list.appendChild(li);
-
-});
-
-calcAverage();
-}
-
-render();
-
-clickBtn.onclick=()=>{
-
-let now=Date.now();
-
-let delta=data.clicks.length
-? words(now-data.clicks[0].ts)
-: "ראשון";
-
-data.clicks.unshift({
-
-ts:now,
-date:new Date(now).toLocaleString("he-IL"),
-delta:delta
-
-});
-
-save();
-
-render();
+// ================= DATA =================
+let data = {
+  packsBought: 0,
+  packsFinished: 0,
+  manualCigs: 0,
+  startTime: null,
+  pricePerPack: 42
 };
 
-clearBtn.onclick=()=>{
+let pendingAction = null;
 
-if(confirm("למחוק הכל?")){
-
-data={clicks:[]};
-
-localStorage.removeItem(KEY);
-
-avgEl.textContent="—";
-
-render();
-
+// ================= INIT =================
+function load() {
+  let saved = localStorage.getItem("smokeTracker");
+  if (saved) {
+    data = JSON.parse(saved);
+  } else {
+    data.startTime = Date.now();
+  }
+  update();
 }
 
-};
+function save() {
+  localStorage.setItem("smokeTracker", JSON.stringify(data));
+}
 
+// ================= POPUP =================
+function ask(action) {
+  pendingAction = action;
+  document.getElementById("popup").classList.add("active");
+}
+
+function closePopup() {
+  document.getElementById("popup").classList.remove("active");
+}
+
+function confirmAction() {
+  if (pendingAction === "addPack") addPack();
+  if (pendingAction === "finishPack") finishPack();
+  if (pendingAction === "addCig") addCig();
+  closePopup();
+}
+
+// ================= ACTIONS =================
+function addPack() {
+  data.packsBought++;
+  save();
+  update();
+}
+
+function finishPack() {
+  if (data.packsFinished < data.packsBought) {
+    data.packsFinished++;
+  }
+  save();
+  update();
+}
+
+function addCig() {
+  data.manualCigs++;
+
+  // אם הגיע ל-20 → הופך לקופסה
+  if (data.manualCigs >= 20) {
+    data.packsFinished++;
+    data.manualCigs -= 20;
+  }
+
+  save();
+  update();
+}
+
+// ================= CALCULATIONS =================
+function update() {
+
+  let totalCigs = (data.packsBought * 20) + data.manualCigs;
+
+  let smokedCigs = (data.packsFinished * 20) + data.manualCigs;
+
+  let smokedPacks = Math.floor(smokedCigs / 20);
+
+  // ================= זמן =================
+  let now = Date.now();
+  let totalMs = now - data.startTime;
+
+  let totalDays = totalMs / (1000*60*60*24);
+
+  // זמן ערות (פחות 8 שעות ביום)
+  let awakeHours = totalDays * 16;
+
+  // ================= ממוצע =================
+  let avgTimeBetween = 0;
+
+  if (smokedCigs > 0) {
+    avgTimeBetween = awakeHours / smokedCigs; // שעות בין סיגריות
+  }
+
+  // המרה לדקות (יותר נוח)
+  let avgMinutes = avgTimeBetween * 60;
+
+  // ================= כסף =================
+  let money = data.packsBought * data.pricePerPack;
+
+  document.getElementById("stats").innerHTML = `
+  📦 קנית: ${data.packsBought} קופסאות<br>
+  🗑️ גמרת: ${data.packsFinished} קופסאות<br>
+  🚬 סיגריות שעישנת: ${smokedCigs}<br>
+  📊 קופסאות שעישנת: ${smokedPacks}<br><br>
+
+  📅 ימים שעברו: ${totalDays.toFixed(1)}<br>
+  ⏱️ זמן ערות: ${awakeHours.toFixed(1)} שעות<br><br>
+
+  📉 זמן ממוצע בין סיגריות: ${avgMinutes.toFixed(1)} דקות<br><br>
+
+  💰 כסף שבוזבז: ₪${money}
+  `;
+}
+// ================= START =================
+load();
 </script>
 
 </body>
