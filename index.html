@@ -1,329 +1,398 @@
 <!DOCTYPE html>
 <html lang="he" dir="rtl">
 <head>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-<meta charset="UTF-8">
-<title>מחשבון עישון</title>
-
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>מונה קופסאות וסיגריות</title>
   <style>
-    :root {
-      --bg: #0a0c14;
-      --card: #151a27;
-      --accent: #00e0ff;
-      --text: #ffffff;
-      --text-light: #b0b8d0;
-    }
-
     * {
-      margin: 0;
-      padding: 0;
       box-sizing: border-box;
+      font-family: Arial, sans-serif;
     }
 
     body {
-      background: linear-gradient(180deg, var(--bg) 0%, #111827 100%);
-      color: var(--text);
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
-      text-align: center;
-      min-height: 100dvh;
-      padding: 20px 15px 40px;
-      line-height: 1.6;
-      overflow-x: hidden;
+      margin: 0;
+      background: #111;
+      color: white;
+      padding: 20px;
     }
 
-    h2 {
-      font-size: 2.1rem;
-      font-weight: 700;
-      margin-bottom: 32px;
-      color: var(--accent);
-      text-shadow: 0 0 20px rgba(0, 224, 255, 0.3);
-      display: flex;
-      align-items: center;
-      justify-content: center;
+    .container {
+      max-width: 900px;
+      margin: auto;
+    }
+
+    h1 {
+      text-align: center;
+      margin-bottom: 20px;
+    }
+
+    .card {
+      background: #1b1b1b;
+      border-radius: 16px;
+      padding: 16px;
+      margin-bottom: 18px;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.25);
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
       gap: 12px;
     }
 
-    /* כפתורים ראשיים */
-    .actions {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 14px;
-      justify-content: center;
-      max-width: 520px;
-      margin: 0 auto;
+    label {
+      display: block;
+      margin-bottom: 6px;
+      font-size: 14px;
+      color: #ccc;
+    }
+
+    input {
+      width: 100%;
+      padding: 12px;
+      border-radius: 10px;
+      border: 1px solid #333;
+      background: #222;
+      color: white;
+      font-size: 16px;
     }
 
     button {
-      padding: 16px 24px;
-      font-size: 1.1rem;
-      font-weight: 600;
       border: none;
-      border-radius: 16px;
-      background: linear-gradient(135deg, var(--accent), #00b8d4);
-      color: #000;
+      border-radius: 12px;
+      padding: 12px 16px;
+      font-size: 16px;
       cursor: pointer;
-      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-      box-shadow: 
-        0 8px 20px rgba(0, 224, 255, 0.3),
-        0 4px 10px rgba(0, 0, 0, 0.2);
-      flex: 1;
-      min-width: 160px;
-      max-width: 240px;
+      margin-top: 12px;
     }
 
-    button:hover {
-      transform: translateY(-4px) scale(1.05);
-      box-shadow: 
-        0 12px 28px rgba(0, 224, 255, 0.4),
-        0 6px 15px rgba(0, 0, 0, 0.3);
-      background: white;
-    }
-
-    button:active {
-      transform: scale(0.95);
-    }
-
-    /* תיבת הסטטיסטיקות */
-    .box {
-      margin: 40px auto 0;
-      max-width: 460px;
-      background: var(--card);
-      border-radius: 20px;
-      padding: 28px 24px;
-      box-shadow: 
-        0 20px 40px rgba(0, 0, 0, 0.4),
-        0 0 0 1px rgba(255,255,255,0.08) inset;
-      font-size: 1.25rem;
-      line-height: 2.1;
-      text-align: right;
-      color: var(--text-light);
-    }
-
-    .box strong {
-      color: var(--accent);
-      font-weight: 700;
-    }
-
-    /* POPUP */
-    .popup {
-      position: fixed;
-      inset: 0;
-      background: rgba(10, 12, 20, 0.92);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      z-index: 9999;
-      opacity: 0;
-      visibility: hidden;
-      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-      backdrop-filter: blur(8px);
-    }
-
-    .popup.active {
-      opacity: 1;
-      visibility: visible;
-    }
-
-    .popup-content {
-      background: #1e2536;
-      padding: 32px 28px;
-      border-radius: 24px;
-      width: 92%;
-      max-width: 340px;
-      box-shadow: 
-        0 25px 50px rgba(0, 0, 0, 0.5),
-        0 0 0 1px rgba(0, 224, 255, 0.15) inset;
-      animation: popupPop 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
-      text-align: center;
-    }
-
-    @keyframes popupPop {
-      0%   { transform: scale(0.7) translateY(30px); opacity: 0; }
-      100% { transform: scale(1) translateY(0); opacity: 1; }
-    }
-
-    .popup-content h3 {
-      font-size: 1.5rem;
-      margin-bottom: 24px;
-      color: #fff;
-    }
-
-    .popup-content button {
+    .btn-main {
+      background: #1db954;
+      color: white;
       width: 100%;
-      margin: 8px 0;
-      padding: 15px;
-      font-size: 1.15rem;
+    }
+
+    .btn-danger {
+      background: #d32f2f;
+      color: white;
+    }
+
+    .btn-secondary {
+      background: #2d2d2d;
+      color: white;
+    }
+
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+      gap: 12px;
+    }
+
+    .stat-box {
+      background: #222;
+      padding: 14px;
       border-radius: 14px;
     }
 
-    .popup-content button:first-child {
-      background: #00e0ff;
-      color: #000;
-      font-weight: 700;
+    .stat-title {
+      color: #aaa;
+      font-size: 14px;
+      margin-bottom: 8px;
     }
 
-    .popup-content button:last-child {
-      background: #333c52;
-      color: #fff;
+    .stat-value {
+      font-size: 24px;
+      font-weight: bold;
     }
 
-    /* טקסטים קטנים */
+    .money::before {
+      content: "₪";
+      margin-left: 2px;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 12px;
+      overflow: hidden;
+      border-radius: 12px;
+    }
+
+    th, td {
+      padding: 10px;
+      text-align: center;
+      border-bottom: 1px solid #2c2c2c;
+      font-size: 14px;
+    }
+
+    th {
+      background: #222;
+    }
+
+    tr {
+      background: #181818;
+    }
+
     .small {
-      font-size: 0.95rem;
-      opacity: 0.7;
-      margin-top: 6px;
+      color: #aaa;
+      font-size: 13px;
+      margin-top: 8px;
     }
 
-    /* התאמה למובייל */
-    @media (max-width: 480px) {
-      h2 { font-size: 1.85rem; }
-      button { font-size: 1.05rem; padding: 15px 20px; }
-      .box { font-size: 1.15rem; padding: 24px 20px; }
+    .actions {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
     }
+
+    @media (max-width: 600px) {
+      .stat-value {
+        font-size: 20px;
+      }
+
+      th, td {
+        font-size: 12px;
+        padding: 8px;
+      }
+    }
+  .btn-main {
+  background: #3a3a3a;
+  color: white;
+    
+}
+  .btn-main:hover {
+  background: #505050;
+}
+  
+  
   </style>
 </head>
-
 <body>
-
-<h2>🚬 מחשבון עישון</h2>
-
-<div>
-  <button onclick="ask('addPack')">➕ קנית קופסה</button>
-  <button onclick="ask('finishPack')">🗑️ גמרת קופסה</button>
-  <button onclick="ask('addCig')">🚬 סיגריה ידנית</button>
+  
+  <div class="card">
+  <button class="btn-main" onclick="addCigarette()">+ סיגריה</button>
+  <button class="btn-main" onclick="addPack()">+ קופסה</button>
+  <button class="btn-secondary" onclick="undoLastAction()">↩ בטל פעולה</button>
 </div>
 
-<div class="box" id="stats"></div>
+    <div class="card">
+      <h2>סיכום כללי</h2>
+      <div class="stats-grid">
+        <div class="stat-box">
+          <div class="stat-title">סך הכול קופסאות</div>
+          <div class="stat-value" id="totalPacks">0</div>
+        </div>
 
-<!-- popup -->
-<div class="popup" id="popup">
-  <div class="popup-content">
-    <h3>אתה בטוח?</h3>
-    <button onclick="confirmAction()">✔ כן</button>
-    <button onclick="closePopup()">❌ לא</button>
+        <div class="stat-box">
+          <div class="stat-title">סך הכול סיגריות</div>
+          <div class="stat-value" id="totalCigarettes">0</div>
+        </div>
+
+        <div class="stat-box">
+          <div class="stat-title">סך הכול שילמת</div>
+          <div class="stat-value money" id="totalPaid">0.00</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <h2>טווחי זמן</h2>
+      <div class="stats-grid">
+        <div class="stat-box">
+          <div class="stat-title">ב־24 שעות האחרונות</div>
+          <div>סיגריות: <strong id="cigs24h">0</strong></div>
+          <div>קופסאות: <strong id="packs24h">0</strong></div>
+        </div>
+
+        <div class="stat-box">
+          <div class="stat-title">ביומיים האחרונים</div>
+          <div>סיגריות: <strong id="cigs2d">0</strong></div>
+          <div>קופסאות: <strong id="packs2d">0</strong></div>
+        </div>
+
+        <div class="stat-box">
+          <div class="stat-title">ב־3 הימים האחרונים</div>
+          <div>סיגריות: <strong id="cigs3d">0</strong></div>
+          <div>קופסאות: <strong id="packs3d">0</strong></div>
+        </div>
+
+        <div class="stat-box">
+          <div class="stat-title">בשבוע האחרון</div>
+          <div>סיגריות: <strong id="cigs7d">0</strong></div>
+          <div>קופסאות: <strong id="packs7d">0</strong></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="actions">
+        <button class="btn-secondary" onclick="exportData()">ייצוא נתונים</button>
+       </div>
+    </div>
+
+    <div class="card">
+      <h2>היסטוריית רישומים</h2>
+      <div style="overflow-x:auto;">
+        <table>
+          <thead>
+            <tr>
+              <th>תאריך</th>
+              <th>קופסאות</th>
+              <th>בודדות</th>
+              <th>סיגריות</th>
+              <th>שולם</th>
+              <th>מחיקה</th>
+            </tr>
+          </thead>
+          <tbody id="historyTable"></tbody>
+        </table>
+      </div>
+    </div>
   </div>
-</div>
 
-<script>
-// ================= DATA =================
-let data = {
-  packsBought: 0,
-  packsFinished: 0,
-  manualCigs: 0,
-  startTime: null,
-  pricePerPack: 42
-};
+  <script>
+const STORAGE_KEY = "smoking_tracker_entries";
 
-let pendingAction = null;
+const PACK_PRICE = 41;
+const CIG_PRICE = 41 / 20;
 
-// ================= INIT =================
-function load() {
-  let saved = localStorage.getItem("smokeTracker");
-  if (saved) {
-    data = JSON.parse(saved);
-  } else {
-    data.startTime = Date.now();
-  }
-  update();
+function getEntries() {
+  return JSON.parse(localStorage.getItem(STORAGE_KEY) || "[]");
 }
 
-function save() {
-  localStorage.setItem("smokeTracker", JSON.stringify(data));
+function saveEntries(entries) {
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(entries));
 }
 
-// ================= POPUP =================
-function ask(action) {
-  pendingAction = action;
-  document.getElementById("popup").classList.add("active");
+// ➕ הוספת סיגריה
+function addCigarette() {
+  const entries = getEntries();
+
+  entries.push({
+    id: Date.now(),
+    datetime: new Date().toISOString(),
+    packs: 0,
+    singles: 1,
+    cigarettes: 1,
+    paid: CIG_PRICE
+  });
+
+  saveEntries(entries);
+  renderAll();
 }
 
-function closePopup() {
-  document.getElementById("popup").classList.remove("active");
-}
-
-function confirmAction() {
-  if (pendingAction === "addPack") addPack();
-  if (pendingAction === "finishPack") finishPack();
-  if (pendingAction === "addCig") addCig();
-  closePopup();
-}
-
-// ================= ACTIONS =================
+// ➕ הוספת קופסה
 function addPack() {
-  data.packsBought++;
-  save();
-  update();
+  const entries = getEntries();
+
+  entries.push({
+    id: Date.now(),
+    datetime: new Date().toISOString(),
+    packs: 1,
+    singles: 0,
+    cigarettes: 20,
+    paid: PACK_PRICE
+  });
+
+  saveEntries(entries);
+  renderAll();
 }
 
-function finishPack() {
-  if (data.packsFinished < data.packsBought) {
-    data.packsFinished++;
+function deleteEntry(id) {
+  const entries = getEntries().filter(e => e.id !== id);
+  saveEntries(entries);
+  renderAll();
+}
+
+function clearAllData() {
+  if (!confirm("למחוק הכל?")) return;
+  localStorage.removeItem(STORAGE_KEY);
+  renderAll();
+}
+
+function sumEntries(entries) {
+  return entries.reduce((acc, e) => {
+    acc.cigarettes += e.cigarettes;
+    acc.packs += e.packs + (e.singles / 20);
+    acc.paid += e.paid;
+    return acc;
+  }, { cigarettes: 0, packs: 0, paid: 0 });
+}
+
+function filterByHours(h) {
+  const now = new Date();
+  const since = new Date(now.getTime() - h * 3600000);
+  return getEntries().filter(e => new Date(e.datetime) >= since);
+}
+
+function filterByDays(d) {
+  const now = new Date();
+  const since = new Date(now.getTime() - d * 86400000);
+  return getEntries().filter(e => new Date(e.datetime) >= since);
+}
+
+function renderStats() {
+  const total = sumEntries(getEntries());
+
+  totalPacks.textContent = total.packs.toFixed(2);
+  totalCigarettes.textContent = total.cigarettes;
+  totalPaid.textContent = total.paid.toFixed(2);
+
+  const h24 = sumEntries(filterByHours(24));
+  const d2 = sumEntries(filterByDays(2));
+  const d3 = sumEntries(filterByDays(3));
+  const d7 = sumEntries(filterByDays(7));
+
+  cigs24h.textContent = h24.cigarettes;
+  packs24h.textContent = h24.packs.toFixed(2);
+
+  cigs2d.textContent = d2.cigarettes;
+  packs2d.textContent = d2.packs.toFixed(2);
+
+  cigs3d.textContent = d3.cigarettes;
+  packs3d.textContent = d3.packs.toFixed(2);
+
+  cigs7d.textContent = d7.cigarettes;
+  packs7d.textContent = d7.packs.toFixed(2);
+}
+
+function renderHistory() {
+  const entries = getEntries().sort((a,b)=>new Date(b.datetime)-new Date(a.datetime));
+
+  historyTable.innerHTML = entries.map(e => `
+    <tr>
+      <td>${new Date(e.datetime).toLocaleString("he-IL")}</td>
+      <td>${e.packs}</td>
+      <td>${e.singles}</td>
+      <td>${e.cigarettes}</td>
+      <td>₪${e.paid.toFixed(2)}</td>
+      <td><button onclick="deleteEntry(${e.id})">❌</button></td>
+    </tr>
+  `).join("");
+}
+
+function renderAll() {
+  renderStats();
+  renderHistory();
+}
+  
+  
+  // 🔙 ביטול פעולה אחרונה
+function undoLastAction() {
+  const entries = getEntries();
+
+  if (entries.length === 0) {
+    alert("אין מה לבטל");
+    return;
   }
-  save();
-  update();
+
+  entries.pop(); // מוחק את האחרון
+  saveEntries(entries);
+  renderAll();
 }
 
-function addCig() {
-  data.manualCigs++;
-
-  // אם הגיע ל-20 → הופך לקופסה
-  if (data.manualCigs >= 20) {
-    data.packsFinished++;
-    data.manualCigs -= 20;
-  }
-
-  save();
-  update();
-}
-
-// ================= CALCULATIONS =================
-function update() {
-
-  let totalCigs = (data.packsBought * 20) + data.manualCigs;
-
-  let smokedCigs = (data.packsFinished * 20) + data.manualCigs;
-
-  let smokedPacks = Math.floor(smokedCigs / 20);
-
-  // ================= זמן =================
-  let now = Date.now();
-  let totalMs = now - data.startTime;
-
-  let totalDays = totalMs / (1000*60*60*24);
-
-  // זמן ערות (פחות 8 שעות ביום)
-  let awakeHours = totalDays * 16;
-
-  // ================= ממוצע =================
-  let avgTimeBetween = 0;
-
-  if (smokedCigs > 0) {
-    avgTimeBetween = awakeHours / smokedCigs; // שעות בין סיגריות
-  }
-
-  // המרה לדקות (יותר נוח)
-  let avgMinutes = avgTimeBetween * 60;
-
-  // ================= כסף =================
-  let money = data.packsBought * data.pricePerPack;
-
-  document.getElementById("stats").innerHTML = `
-  📦 קנית: ${data.packsBought} קופסאות<br>
-  🗑️ גמרת: ${data.packsFinished} קופסאות<br>
-  🚬 סיגריות שעישנת: ${smokedCigs}<br>
-  📊 קופסאות שעישנת: ${smokedPacks}<br><br>
-
-  📅 ימים שעברו: ${totalDays.toFixed(1)}<br>
-  ⏱️ זמן ערות: ${awakeHours.toFixed(1)} שעות<br><br>
-
-  📉 זמן ממוצע בין סיגריות: ${avgMinutes.toFixed(1)} דקות<br><br>
-
-  💰 כסף שבוזבז: ₪${money}
-  `;
-}
-// ================= START =================
-load();
+renderAll();
 </script>
-
 </body>
 </html>
