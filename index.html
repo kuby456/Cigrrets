@@ -165,15 +165,45 @@
   background: #505050;
 }
   
+  .btn-cig {
+  background: #2b2b2b;
+  color: #ddd;
+}
+
+.btn-cig:hover {
+  background: #3a3a3a;
+}
+
+.btn-pack {
+  background: #3b4a5a;
+  color: #fff;
+}
+
+.btn-pack:hover {
+  background: #4c5f73;
+}
   
+  .buttons-center {
+  display: flex;
+  justify-content: center; /* מרכז אופקי */
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.buttons-center button {
+  min-width: 140px;
+}
   </style>
 </head>
 <body>
   
   <div class="card">
-  <button class="btn-main" onclick="addCigarette()">+ סיגריה</button>
-  <button class="btn-main" onclick="addPack()">+ קופסה</button>
-  <button class="btn-secondary" onclick="undoLastAction()">↩ בטל פעולה</button>
+  <div class="buttons-center">
+    <button class="btn-cig" onclick="addCigarette()">🚬 סיגריה</button>
+    <button class="btn-pack" onclick="addPack()">📦 קופסה</button>
+    <button class="btn-secondary" onclick="undoLastAction()">↩ בטל פעולה</button>
+  </div>
 </div>
 
     <div class="card">
